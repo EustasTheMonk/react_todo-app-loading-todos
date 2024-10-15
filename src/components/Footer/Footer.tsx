@@ -1,10 +1,10 @@
 import cn from 'classnames';
-import { FilterTypes } from '../types/FilterTypes';
+import { FilterTypes } from '../../types/FilterTypes';
 import React from 'react';
 
 interface Props {
   unfinishedTodoAmount: number;
-  setFilterInstructions: React.Dispatch<React.SetStateAction<FilterTypes>>;
+  setFilterInstructions: (filterType: FilterTypes) => void;
   filterInstructions: FilterTypes;
 }
 
@@ -55,7 +55,6 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

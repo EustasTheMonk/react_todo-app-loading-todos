@@ -7,12 +7,10 @@ export const getPreparedTodos = (
 ): Todo[] => {
   return todos.filter(todo => {
     switch (filterInstructions) {
-      case FilterTypes.All:
-        return true;
       case FilterTypes.Active:
-        return todo.completed === false;
+        return !todo.completed;
       case FilterTypes.Completed:
-        return todo.completed === true;
+        return todo.completed;
       default:
         return true;
     }

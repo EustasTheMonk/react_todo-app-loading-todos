@@ -2,16 +2,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, USER_ID } from './api/todos';
+import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList/TodoList';
 import { FilterTypes } from './types/FilterTypes';
 import { getPreparedTodos } from './utils/GetPrepatedTodos';
 import { getAmountOfActiveTodos } from './utils/getAmountOfActiveTodos';
-import { Footer } from './components/Footer';
+import { Footer } from './components/Footer/Footer';
 import { Errors } from './utils/Errors';
-import { ErrorsField } from './components/ErrorsField';
-import { Header } from './components/Header';
+import { ErrorsField } from './components/ErrorsField/ErrorsField';
+import { Header } from './components/Header/Header';
+import { USER_ID } from './utils/CONSTANTS';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,15 +20,13 @@ export const App: React.FC = () => {
     FilterTypes.All,
   );
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.Default);
-  const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
 
   useEffect(() => {
     getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage(Errors.Loading);
-        setShowErrorMessage(true);
-        setTimeout(() => setShowErrorMessage(false), 3000);
+        setTimeout(() => setErrorMessage(Errors.Default), 3000);
       });
   }, []);
 
@@ -35,8 +34,6 @@ export const App: React.FC = () => {
     () => getAmountOfActiveTodos(todos),
     [todos],
   );
-
-  const areAllTodoCompleted = unfinishedTodoAmount === 0;
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -50,11 +47,13 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          areAllTodoCompleted={areAllTodoCompleted}
+          unfinishedTodoAmount={unfinishedTodoAmount}
           todosLength={todos.length}
         />
+
         <TodoList todos={preparedTodos} />
-        {todos.length > 0 && (
+
+        {!!todos.length && (
           <Footer
             unfinishedTodoAmount={unfinishedTodoAmount}
             filterInstructions={filterInstructions}
@@ -63,12 +62,9 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <ErrorsField
-        showErrorMessage={showErrorMessage}
-        setShowErrorMessage={setShowErrorMessage}
         errorMessage={errorMessage}
+        onErrorMessageChange={setErrorMessage}
       />
     </div>
   );
